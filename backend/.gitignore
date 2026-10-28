@@ -1,0 +1,7 @@
+Fichier .gitignore (f la racine):
+
+venv/
+.env
+__pycache__/
+node_modules/
+*.sqlite3
