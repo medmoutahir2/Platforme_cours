@@ -1,0 +1,12 @@
+import { useAuth } from "../context/AuthContext";
+
+export default function ProfessorDashboard() {
+  const { user, logout } = useAuth();
+  return (
+    <div className="container mt-5">
+      <h1 className="h3">Espace Professeur</h1>
+      <p>Bienvenue {user.first_name} 👋</p>
+      <button className="btn btn-outline-secondary" onClick={logout}>Se déconnecter</button>
+    </div>
+  );
+}
