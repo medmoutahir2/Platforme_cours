@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import api, { errorMessage } from "../api";
 import { useAuth } from "../context/AuthContext";
 import CourseForm from "../components/CourseForm";
+import { Link } from "react-router-dom";
 
 export default function ProfessorDashboard() {
   const { user, logout } = useAuth();
@@ -160,6 +161,9 @@ export default function ProfessorDashboard() {
                 </span>
               </div>
               <div className="card-footer d-flex gap-2">
+                <Link className="btn btn-sm btn-primary" to={`/professor/courses/${course.id}`}>
+                  Gérer
+                </Link>
                 <button className="btn btn-sm btn-outline-primary" onClick={() => openEdit(course)}>
                   Modifier
                 </button>

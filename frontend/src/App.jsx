@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProfessorDashboard from "./pages/ProfessorDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
+import CourseManage from "./pages/CourseManage";
 
 function RoleRedirect() {
   const { user, loading } = useAuth();
@@ -20,12 +21,18 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
           <Route path="/professor" element={
             <ProtectedRoute role="PROFESSOR"><ProfessorDashboard /></ProtectedRoute>
           } />
+          <Route path="/professor/courses/:id" element={
+            <ProtectedRoute role="PROFESSOR"><CourseManage /></ProtectedRoute>
+          } />
+
           <Route path="/student" element={
             <ProtectedRoute role="STUDENT"><StudentDashboard /></ProtectedRoute>
           } />
+
           <Route path="*" element={<RoleRedirect />} />
         </Routes>
       </AuthProvider>
