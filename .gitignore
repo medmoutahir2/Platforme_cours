@@ -1,0 +1,10 @@
+cd D:\plateforme-cours
+@"
+venv/
+.env
+__pycache__/
+node_modules/
+*.sqlite3
+staticfiles/
+"@ | Set-Content .gitignore -Encoding utf8
+dir -Force
