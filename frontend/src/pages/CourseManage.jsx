@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api, { errorMessage } from "../api";
 import LessonForm from "../components/LessonForm";
-
+import LiveSessionsSection from "../components/LiveSessionsSection";
+  
 export default function CourseManage() {
   const { id } = useParams();
 
@@ -144,6 +145,11 @@ export default function CourseManage() {
           </li>
         ))}
       </ul>
+      <LiveSessionsSection
+    courseId={course.id}
+    sessions={course.live_sessions}
+    onChanged={loadCourse}
+  />
     </div>
   );
 }
