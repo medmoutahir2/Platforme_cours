@@ -3,15 +3,20 @@
 Mini-projet Full-Stack : un professeur gère des cours, des leçons vidéo et des sessions Live ;
 un étudiant consulte les cours, regarde les vidéos et rejoint les Lives.
 
-- **Application en ligne** : [URL à renseigner après déploiement]
 - **Code source** : https://github.com/medmoutahir2/Platforme_cours
+- **Déploiement** : non réalisé (voir « Limites connues »). L'application se lance en local en quelques commandes (voir plus bas).
 
-## Comptes de test
+## Comptes de test (locaux)
 
-| Rôle | Email | Mot de passe |
-|---|---|---|
-| Professeur | prof.demo@example.com | [communiqué avec le rendu] |
-| Étudiant | etudiant.demo@example.com | [communiqué avec le rendu] |
+Les comptes de démonstration sont créés par une commande, avec des mots de passe lus dans le fichier `.env`
+(aucun mot de passe n'est publié dans le dépôt) :
+
+| Rôle | Email |
+|---|---|
+| Professeur | prof.demo@example.com |
+| Étudiant | etudiant.demo@example.com |
+
+Les mots de passe sont communiqués avec le rendu. Voir « Lancer le projet en local ».
 
 ## Stack technique
 
@@ -20,10 +25,10 @@ un étudiant consulte les cours, regarde les vidéos et rejoint les Lives.
 | Backend | Python, Django, Django REST Framework | Auth, ORM, validations et permissions intégrés ; livraison rapide |
 | Base de données | PostgreSQL | Fiable, standard, bien supporté par Django |
 | Authentification | Sessions Django (cookie HttpOnly) + protection CSRF | Plus simple et plus sûr que stocker un JWT dans le navigateur |
-| Frontend (pages publiques) | HTML / CSS / JS + Bootstrap, servi par Django | Page d'accueil légère et rapide |
+| Frontend (pages publiques) | HTML / CSS / JS + Bootstrap, servi par Django | Page d'accueil légère |
 | Frontend (espaces privés) | React (Vite), React Router, Axios | Interfaces interactives (dashboards) |
-| Fichiers statiques | WhiteNoise | Django sert aussi le build React : une seule URL |
-| Déploiement | Docker (build React + Django) | [à compléter selon l'hébergeur] |
+| Fichiers statiques | WhiteNoise | Django peut aussi servir le build React |
+| Conteneur | Dockerfile (build React + Django) | Préparé pour un hébergement ; non testé en ligne |
 
 ## Architecture
 
@@ -31,7 +36,7 @@ un étudiant consulte les cours, regarde les vidéos et rejoint les Lives.
 Navigateur
    │
    ├── /            → page d'accueil (template Django, HTML/CSS/JS)
-   ├── /app/...     → application React (build servi par Django)
+   ├── /app/...     → application React (login, inscription, espaces Professeur / Étudiant)
    └── /api/...     → API JSON (Django REST Framework)
                           │
                           ▼
@@ -50,11 +55,13 @@ frontend/   React + Vite (src/pages, src/components, src/context)
 Dockerfile  build du frontend puis image Django
 ```
 
+Modèle de données : `User` (email, rôle) → `Course` (titre, description, image) → `Lesson` (titre, description, URL vidéo, position)
+et `LiveSession` (titre, date et heure, lien).
+
 ## Règle de visibilité des cours
 
-Tout étudiant connecté voit tous les cours. Il n'y a pas d'inscription par cours
-(simplification volontaire). Un professeur ne peut modifier que ses propres cours,
-leçons et sessions Live.
+Tout étudiant connecté voit tous les cours. Il n'y a pas d'inscription par cours (simplification volontaire).
+Un professeur ne peut modifier que ses propres cours, leçons et sessions Live.
 
 ## Prérequis
 
@@ -82,9 +89,12 @@ venv\Scripts\activate            # Linux/Mac : source venv/bin/activate
 pip install -r requirements.txt
 copy .env.example .env           # Linux/Mac : cp .env.example .env (puis renseigner les valeurs)
 python manage.py migrate
-python manage.py createsuperuser
+python manage.py seed_demo       # crée les comptes et un cours de démonstration
 python manage.py runserver
 ```
+
+Dans `.env`, renseigner aussi `DEMO_PROF_PASSWORD` et `DEMO_STUDENT_PASSWORD` avant `seed_demo`.
+Pour accéder à l'administration Django : `python manage.py createsuperuser`, puis http://127.0.0.1:8000/admin/
 
 ### 3. Frontend (développement)
 
@@ -96,7 +106,7 @@ npm run dev
 
 Ouvrir http://localhost:5173/app/ (le proxy Vite redirige `/api` vers Django).
 
-### 4. Build complet (comme en production)
+### 4. Build complet (une seule URL, comme en production)
 
 ```bash
 cd frontend
@@ -105,7 +115,14 @@ cd ../backend
 python manage.py runserver
 ```
 
-Ouvrir http://127.0.0.1:8000/
+Ouvrir http://127.0.0.1:8000/ (page d'accueil) ; l'application est sous `/app/`.
+
+## Parcours de démonstration
+
+1. Page d'accueil → **Connexion** avec le compte Professeur.
+2. Créer un cours, ajouter une leçon (URL YouTube), programmer une session Live (date future, lien Meet/Jitsi).
+3. Se déconnecter, se connecter avec le compte Étudiant.
+4. Ouvrir le cours, lire la vidéo, cliquer sur **Rejoindre le Live**.
 
 ## Vérifications reproductibles
 
@@ -146,7 +163,8 @@ Suite complète : `python manage.py test` (12 tests).
 - Live : lien externe (Meet, Zoom, Jitsi), pas de Live intégré
 - Image de couverture : URL (pas d'upload)
 
-**Non réalisées (limites connues)**
+**Non réalisées / limites connues**
+- **Déploiement en ligne non réalisé** : l'application se teste en local avec les instructions ci-dessus. Un `Dockerfile` est fourni mais n'a pas été testé sur un hébergeur.
 - Inscription des étudiants à un cours (enrollment) et multi-établissements
 - Choix du rôle libre à l'inscription (en production : invitation ou validation par un administrateur)
 - Pas de réinitialisation de mot de passe, pas de vérification d'email, pas de limitation des tentatives de connexion
@@ -159,4 +177,4 @@ Le code a été relu, testé et adapté ; je suis en mesure de l'expliquer et de
 
 ## Étude technico-économique et propositions
 
-Voir la note de décision (vidéos enregistrées, Live intégré, coûts, évolution).
+Voir `docs/NOTE_DE_DECISION.md` (vidéos enregistrées, Live intégré, coûts, évolution vers une vraie plateforme).
